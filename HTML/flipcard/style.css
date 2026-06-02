@@ -15,7 +15,6 @@
   --text-size: 34px;
   --brand-blue: #2874f0;
 
-  /* Shared width for header and main */
   --content-width: min(1200px, 75vw);
 }
 
@@ -32,11 +31,6 @@ body {
   width: 100%;
   background-color: #ffffff;
 }
-
-/* =========================
-   HEADER
-========================= */
-
 header {
   width: var(--content-width);
   height: 100px;
@@ -48,7 +42,6 @@ header {
 
   z-index: 100;
 }
-
 nav {
   display: flex;
   flex-direction: column;
@@ -181,25 +174,15 @@ nav {
   border-color: var(--wh-slate-300);
 }
 
-/* =========================
-   MAIN
-========================= */
-
 main {
   width: var(--content-width);
 
-  /* Push content below fixed header */
   margin: 230px auto 0;
 
-  /* TODO : Remove after implementing */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
-
-/* =========================
-   ICONS
-========================= */
 
 #icons-box {
   width: 100%;
@@ -229,10 +212,6 @@ main {
   justify-content: center;
   align-items: center;
 }
-
-/* =========================
-   AD BANNERS
-========================= */
 
 #ad-banner {
   display: flex;
@@ -272,10 +251,6 @@ main {
   height: 100%;
   background-color: beige;
 }
-
-/* =========================
-   HOME DECOR
-========================= */
 
 #home-decor-1,
 #home-decor-2 {
@@ -327,7 +302,6 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* align-items: center; */
   gap: 0.3rem;
 
   border-radius: 0.5rem;
@@ -344,7 +318,6 @@ main {
   font-weight: 600;
 }
 
-/* Footer */
 footer {
   width: 100vw;
   background-color: rgb(39, 38, 38);
@@ -414,10 +387,6 @@ footer {
     grid-template-columns: 1fr;
   }
 }
-
-/* ==========================
-   FLIPKART FOOTER
-========================== */
 
 footer {
   width: 100%;
