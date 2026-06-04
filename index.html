@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Pixel Art Particles</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050505;
+        }
+        canvas {
+            display: block;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: monospace;
+            font-size: 20px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading">Loading Image Data...</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // 1. SCENE SETUP
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        camera.position.z = 12;
+
+        // 2. IMAGE PROCESSING
+        const img = new Image();
+        img.src = 'image_113c24.png'; // Must match your file exactly
+
+        let particles;
+        let geometry;
+        let particleCount = 0;
+        
+        // Arrays to hold positions
+        let basePositions;   // The original resting spot of the pixels
+        let currentPositions;// Actual position on screen (affected by mouse)
+
+        img.onload = () => {
+            document.getElementById('loading').style.display = 'none';
+
+            // Create a temporary 2D canvas to read the image pixels
+            const canvas2d = document.createElement('canvas');
+            const ctx = canvas2d.getContext('2d', { willReadFrequently: true });
+            
+            // Scale image down to roughly 100px height to keep particle count optimized
+            const scale = 100 / img.height;
+            const w = Math.floor(img.width * scale);
+            const h = 100;
+            
+            canvas2d.width = w;
+            canvas2d.height = h;
+            ctx.drawImage(img, 0, 0, w, h);
+            
+            const imageData = ctx.getImageData(0, 0, w, h).data;
+
+            // Count opaque pixels
+            for (let i = 3; i < imageData.length; i += 4) {
+                if (imageData[i] > 128) particleCount++;
+            }
+
+            // Initialize Three.js Arrays
+            geometry = new THREE.BufferGeometry();
+            basePositions = new Float32Array(particleCount * 3);
+            currentPositions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            let particleIdx = 0;
+
+            // Loop through pixels and create 3D coordinates
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const pixelIndex = (y * w + x) * 4;
+                    const alpha = imageData[pixelIndex + 3];
+
+                    // If pixel is not transparent
+                    if (alpha > 128) {
+                        const px = (x - w / 2) * 0.15;
+                        const py = -(y - h / 2) * 0.15; 
+                        const pz = (Math.random() - 0.5) * 0.5; // Slight 3D depth
+
+                        // Set Base Positions
+                        basePositions[particleIdx * 3] = px;
+                        basePositions[particleIdx * 3 + 1] = py;
+                        basePositions[particleIdx * 3 + 2] = pz;
+
+                        // Initialize current positions
+                        currentPositions[particleIdx * 3] = px;
+                        currentPositions[particleIdx * 3 + 1] = py;
+                        currentPositions[particleIdx * 3 + 2] = pz;
+
+                        // Set Colors based on the image pixel
+                        colors[particleIdx * 3] = imageData[pixelIndex] / 255;
+                        colors[particleIdx * 3 + 1] = imageData[pixelIndex + 1] / 255;
+                        colors[particleIdx * 3 + 2] = imageData[pixelIndex + 2] / 255;
+
+                        particleIdx++;
+                    }
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(currentPositions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: true, 
+                transparent: true,
+                opacity: 0.9
+            });
+
+            particles = new THREE.Points(geometry, material);
+            
+            // Center the whole object on screen
+            geometry.computeBoundingBox();
+            const center = new THREE.Vector3();
+            geometry.boundingBox.getCenter(center);
+            particles.position.sub(center);
+            
+            scene.add(particles);
+
+            // Start animation loop once loaded
+            animate();
+        };
+
+        // 3. MOUSE INTERACTION SETUP
+        const mouse = new THREE.Vector2();
+        const raycaster = new THREE.Raycaster();
+        
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 4. ANIMATION LOOP
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (!particles) return; // Wait until image is loaded
+
+            // Gentle floating effect to keep the scene dynamic
+            particles.position.y = Math.sin(Date.now() * 0.002) * 0.2 - 0.5;
+
+            raycaster.setFromCamera(mouse, camera);
+            const posArray = geometry.getAttribute('position').array;
+            
+            const interactRadius = 1.2; 
+            const repelStrength = 0.8;
+
+            for (let i = 0; i < particleCount; i++) {
+                
+                const bx = basePositions[i * 3];
+                const by = basePositions[i * 3 + 1];
+                const bz = basePositions[i * 3 + 2];
+
+                // Mouse Repel Logic
+                const particlePos = new THREE.Vector3(bx, by, bz);
+                particlePos.applyMatrix4(particles.matrixWorld);
+
+                const distanceToMouseRay = raycaster.ray.distanceToPoint(particlePos);
+
+                if (distanceToMouseRay < interactRadius) {
+                    // Scatter randomly when the mouse is close
+                    posArray[i * 3] += (Math.random() - 0.5) * repelStrength;
+                    posArray[i * 3 + 1] += (Math.random() - 0.5) * repelStrength;
+                    posArray[i * 3 + 2] += (Math.random() - 0.5) * repelStrength;
+                } else {
+                    // Smoothly snap back to the base position
+                    posArray[i * 3] += (bx - posArray[i * 3]) * 0.15;
+                    posArray[i * 3 + 1] += (by - posArray[i * 3 + 1]) * 0.15;
+                    posArray[i * 3 + 2] += (bz - posArray[i * 3 + 2]) * 0.15;
+                }
+            }
+
+            geometry.getAttribute('position').needsUpdate = true;
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
