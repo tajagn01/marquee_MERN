@@ -1,81 +1,102 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
 }
 
-body{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#bb7777;
+:root {
+  --card-border-radius: 2rem;
+  --heading-font-size: 1.8rem;
+  /* Blue */
+  --blue-card-bg: #b6ceda;
+  --blue-card-color: #153346;
+  /* Purple */
+  --purple-card-bg: #c2b2e5;
+  --purple-card-color: #4a255d;
+  /* Pink */
+  --pink-card-bg: #f481a2;
+  --pink-card-color: #571a4e;
+  /* Green */
+  --green-card-bg: #c7da8f;
+  --green-card-color: #193301;
+  /* Yellow */
+  --yellow-card-bg: #fbde70;
+  --yellow-card-color: #59450e;
+  /* Orange */
+  --orange-card-bg: #f7a274;
+  --orange-card-color: #672100;
 }
 
-.container{
-    width:900px;
-    height:450px;
+body {
+  background-color: #f8efe6;
+  padding: 40px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+.grid-container {
+  /* Container Height and width */
+  height: 600px;
+  width: 800px;
+  background-color: transparent;
+  display: grid;
+  
+  /* Cell Width */
+  grid-template-columns: repeat(3, 1fr);
 
-    gap:12px;
-    background:#80d2b3;
-    padding:12px;
+  /* Cell Height */
+  grid-template-rows: repeat(3, 1fr);
+
+  grid-template-areas:
+    "customization scheduling scheduling"
+    "customization wallet inbox"
+    "send-gifts send-gifts reminders";
+  
+  /* Gaps */
+  gap: 10px;
+}
+
+.grid-item {
+  border-radius: 25px;
+  padding: 30px;
+  color: #2b2b2b;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 
 
-.green{
-    background:#6db24a;
+
+.item-customization {
+  grid-area: customization;
+  background-color: #bfaee3; 
 }
 
-.red{
-    background:#ff4538;
+.item-scheduling {
+  grid-area: scheduling;
+  background-color: #ff90ad;
 }
 
-.yellow{
-    background:#f8b32c;
+.item-wallet {
+  grid-area: wallet;
+  background-color: #bad393;
 }
 
-
-.left{
-    grid-row:1 / 4;
-    grid-column:1;
+.item-inbox {
+  grid-area: inbox;
+  background-color: #fce373;
 }
 
-.top{
-    grid-column:2 / 4;
-    grid-row:1;
+.item-send-gifts {
+  grid-area: send-gifts;
+  background-color: #ffaa76;
 }
 
-.top-right{
-    grid-column:4;
-    grid-row:1;
-}
-
-.middle-left{
-    grid-column:2;
-    grid-row:2;
-}
-
-.middle-right{
-    grid-column:3;
-    grid-row:2;
-}
-
-.bottom-left{
-    grid-column:2;
-    grid-row:3;
-}
-
-.bottom-right{
-    grid-column:3;
-    grid-row:3;
-}
-
-.right{
-    grid-column:4;
-    grid-row:2 / 4;
+.item-reminders {
+  grid-area: reminders;
+  background-color: #b7d6df;
 }
