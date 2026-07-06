@@ -1,11 +1,16 @@
 debugger;
-x = 30;
-console.log(`Value of X is ${x}`); //30
+console.log('Global Execution Context Start');
 
-console.log(`Value of X is ${y}`);
-let y = 12;
+var globalVariable = 'I am a global Variable';
 
-var x = 10;
-console.log(`Value of X 2 is ${x} `); //10
+console.log(globalVariable);
+console.log(greet());
+greet();
+
+console.log('Global Execution Context End');
 
 
+function greet() {
+  var name = 'Hastag';
+  console.log('Inside Global Function');
+}
