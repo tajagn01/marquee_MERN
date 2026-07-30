@@ -90,4 +90,14 @@ function InsufficientFundEmail(amount) {
 let obj1 = new Bank('Raj', '5959561000', 'raj45@gmail.com', 522000);
 
 obj1.deposit(9000);
-// Object().__proto__.sendDepositEmail.call(obj1, 9000);
+Object().__proto__.sendDepositEmail.call(obj1, 9000);
+
+Object().__proto__.sendWithdrawEmail = function (amount, name) {
+  return `To ${name},
+    This is to inform you that amount of Rs.${amount} is withdrawn | Available Balance is ${this.balance}`;
+}
+
+Object().__proto__.InsufficientFundEmail = function (amount) {
+  return `To ${this.accountHolderName},
+    You're trying to withdraw Balance then available Rs .${amount}`;
+}
