@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Management</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      padding: 30px;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: inline-block;
+      width: 120px;
+      font-weight: bold;
+    }
+
+    input,
+    select {
+      width: 250px;
+      padding: 8px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: steelblue;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+      margin-top: 10px;
+    }
+
+    .add-btn {
+      background: steelblue;
+    }
+
+    .add-btn:hover {
+      background: #346d9c;
+    }
+
+    .delete-btn {
+      background: crimson;
+    }
+
+    .delete-btn:hover {
+      background: darkred;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #444;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f8f8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Add Product</h2>
+
+    <form id="form">
+
+      <div class="form-group">
+        <label>Product Name</label>
+        <input type="text" name="name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select name="category" required>
+          <option value="">-- Select Category --</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Groceries</option>
+          <option>Books</option>
+          <option>Furniture</option>
+          <option>Sports</option>
+          <option>Beauty & Personal Care</option>
+          <option>Toys</option>
+          <option>Stationery</option>
+          <option>Home & Kitchen</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" name="price" required>
+      </div>
+
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" name="quantity" required>
+      </div>
+
+      <button type="submit" class="add-btn">Add Product</button>
+
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Products</h2>
+
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Sr.</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody></tbody>
+    </table>
+
+  </div>
+
+</div>
+
+<script>
+const form = document.getElementById("form");
+const tableBody = document.querySelector("#table tbody");
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+displayProducts();
+
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const product = {
+        name: form.elements.name.value.trim(),
+        category: form.elements.category.value,
+        price: Number(form.elements.price.value),
+        quantity: Number(form.elements.quantity.value)
+    };
+
+    products.push(product);
+
+    localStorage.setItem("products", JSON.stringify(products));
+
+    form.reset();
+
+    displayProducts();
+});
+
+function displayProducts() {
+
+    tableBody.innerHTML = "";
+
+    products.forEach((product, index) => {
+
+        const row = tableBody.insertRow();
+
+        row.insertCell().textContent = index + 1;
+        row.insertCell().textContent = product.name;
+        row.insertCell().textContent = product.category;
+        row.insertCell().textContent = "₹" + product.price;
+        row.insertCell().textContent = product.quantity;
+
+        const actionCell = row.insertCell();
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+
+        deleteBtn.onclick = function () {
+
+            products.splice(index, 1);
+
+            localStorage.setItem("products", JSON.stringify(products));
+
+            displayProducts();
+        };
+
+        actionCell.appendChild(deleteBtn);
+    });
+
+}
+</script>
+
+</body>
+</html>
