@@ -261,7 +261,7 @@ body {
   position: absolute;
   top: -100%;
   transition: all 0.3s ease;
-  background-color: salmon;
+  background-color: rgb(244, 244, 244);
   overflow: hidden;
 }
 
@@ -276,6 +276,7 @@ input {
   outline: none;
   border: none;
   background-color: transparent;
+  padding-left: 50px;
 }
 input,
 ::placeholder {
@@ -283,4 +284,5 @@ input,
   font-size: 3rem;
   font-weight: 800;
   color: #c9c9c9;
+  width: 1000px;
 }
